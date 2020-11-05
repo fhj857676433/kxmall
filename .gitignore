@@ -8,9 +8,9 @@
 /*.log
 /kxmall-admin-api/*.iml
 /kxmall-service-message/target
-/kxmall-admin-api/market-admin-api.iml
-/kxmall-biz/market-biz.iml
-/kxmall-core/market-core.iml
-/kxmall-data/market-data.iml
-/kxmall-admin/market-admin.iml
+/kxmall-admin-api/kxmall-admin-api.iml
+/kxmall-biz/kxmall-biz.iml
+/kxmall-core/kxmall-core.iml
+/kxmall-data/kxmall-data.iml
+/kxmall-admin/kxmall-admin.iml
 /kxmall-plugin-core/target
