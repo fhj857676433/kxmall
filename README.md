@@ -72,7 +72,6 @@ kxmall项目结构:
 |  MySQL   |  5.7（推荐）   |
 |  JDK   |  1.8（推荐）   |
 |  Redis   |  4.0.1（其他也可以）   |
-|  RabbitMq  | 3.7.15（其他也可以）   |
 |  Nginx  |  只要Web容器就可以了  |
 
 请参考 [CentOS7.4 安装 MySQL5.7](https://github.com/iotechn/document-basic/blob/master/CentOS7.4_Install_MySQL5.7.md)
