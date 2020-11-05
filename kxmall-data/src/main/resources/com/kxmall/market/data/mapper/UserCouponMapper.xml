@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kxmall.market.data.mapper.UserCouponMapper">
+
+    <select id="getUserCoupons" resultType="com.kxmall.market.data.dto.UserCouponDTO">
+        SELECT
+            u.id,
+            u.user_id AS userId,
+            u.coupon_id AS 'couponDO.id',
+            u.coupon_id AS couponId,
+            u.gmt_update AS gmtUpdate,
+            u.gmt_create AS gmtCreate,
+            u.gmt_end AS gmtEnd,
+            u.gmt_start AS gmtStart,
+            u.order_id as orderId,
+            c.title AS 'couponDO.title',
+            c.category_id AS 'couponDO.categoryId',
+            y.title AS categoryTitle,
+            c.min as 'couponDO.min',
+            c.discount as 'couponDO.discount',
+            u.activity_id as activityId,
+            u.activity_type as activityType,
+            c.type as 'couponDO.type',
+            c.discount_type as 'couponDO.discountType'
+        FROM
+            kxmall_user_coupon AS u,
+            kxmall_coupon AS c
+            LEFT JOIN kxmall_category AS y ON c.category_id = y.id
+        WHERE
+            u.coupon_id = c.id
+            AND u.user_id = #{userId}
+            AND u.gmt_used IS NULL
+            AND c.type =#{couponType}
+            <if test="status != null">
+                <if test="status == 1">
+                    <![CDATA[
+                    AND u.order_id = 0
+                    AND unix_timestamp(u.gmt_start) < unix_timestamp(now())
+                    AND unix_timestamp(u.gmt_end) > unix_timestamp(now())
+                     ]]>
+                </if>
+                <if test="status == 2">
+                    <![CDATA[
+                    AND u.order_id not in (0)
+                    AND unix_timestamp(u.gmt_start) < unix_timestamp(now())
+                    AND unix_timestamp(u.gmt_end) > unix_timestamp(now())
+                     ]]>
+                </if>
+                <if test="status == 3">
+                    <![CDATA[
+                    AND u.order_id = 0
+                    AND (unix_timestamp(u.gmt_start) > unix_timestamp(now()) or unix_timestamp(u.gmt_end) < unix_timestamp(now()) )
+                     ]]>
+                </if>
+            </if>
+    </select>
+
+    <select id="getUserCouponById" resultType="com.kxmall.market.data.dto.UserCouponDTO">
+        SELECT
+            u.id,
+            u.user_id AS userId,
+            u.coupon_id AS couponId,
+            u.gmt_update AS gmtUpdate,
+            u.gmt_create AS gmtCreate,
+            c.title,
+            c.category_id AS categoryId,
+            y.title AS categoryTitle,
+            c.`min`,
+            c.discount
+        FROM
+            kxmall_user_coupon AS u,
+            kxmall_coupon AS c
+            LEFT JOIN kxmall_category AS y ON c.category_id = y.id
+        WHERE
+            u.id = #{userCouponId}
+            AND u.coupon_id = c.id
+            AND u.user_id = #{userId}
+            AND u.gmt_used IS NULL
+            AND unix_timestamp(u.gmt_start) &lt; unix_timestamp(now())
+            AND unix_timestamp(u.gmt_end) &gt; unix_timestamp(now())
+    </select>
+
+
+    <select id="selectUserCouponByPage" resultType="com.kxmall.market.data.dto.UserCouponDTO">
+
+        select
+        IFNULL(co.order_id,0) as 'orderId',
+        IFNULL(co.gmt_used,0) as 'gmtUsed',
+        co.gmt_start as 'gmtStart',
+        co.gmt_end as 'gmtEnd',
+        ifnull(us.nickname,'') as 'userDO.nickname',
+        ifnull(us.phone,'') as 'userDO.phone',
+        coupon.title as 'couponDO.title',
+        coupon.type as 'couponDO.type',
+        act.title as 'activityDO.title'
+        from kxmall_user_coupon co
+        left join kxmall_user us on us.id = co.user_id
+        left join kxmall_coupon coupon on coupon.id = co.coupon_id
+        left join kxmall_activity act on act.id = co.activity_id
+        where 1=1
+        <if test="name != null">
+            AND ( us.nickname like concat("%",#{name},"%") or us.phone like concat("%",#{name},"%"))
+        </if>
+         <if test="activityName != null">
+             AND coupon.title like concat("%",#{activityName},"%")
+         </if>
+         <if test="activityType != null">
+             AND act.type = #{activityType}
+         </if>
+        order by co.id desc
+    </select>
+    <select id="selectUserCouponByCount" resultType="java.lang.Integer">
+        select count(co.id)
+        from kxmall_user_coupon co
+        left join kxmall_user us on us.id = co.user_id
+        left join kxmall_coupon coupon on coupon.id = co.coupon_id
+        left join kxmall_activity act on act.id = co.activity_id
+        where 1=1
+        <if test="name != null">
+            AND ( us.nickname like concat("%",#{name},"%") or us.phone like concat("%",#{name},"%"))
+        </if>
+        <if test="activityName != null">
+            AND coupon.title like concat("%",#{activityName},"%")
+        </if>
+        <if test="activityType != null">
+            AND act.type = #{activityType}
+        </if>
+    </select>
+
+
+</mapper>

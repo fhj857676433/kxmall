@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kxmall.market.data.mapper.OrderMapper">
+
+
+    <select id="selectOrderPage" resultType="com.kxmall.market.data.dto.order.OrderDTO">
+        SELECT
+            id,
+            order_no AS orderNo,
+            `status`,
+            actual_price AS actualPrice,
+            gmt_create AS gmtCreate
+        FROM
+            kxmall_order
+        WHERE
+            user_id = #{userId}
+            <if test="status != null and status != 0">
+                AND `status` = #{status}
+            </if>
+        ORDER BY id DESC
+            LIMIT #{offset}, #{limit}
+
+    </select>
+
+    <select id="selectOrderPages" resultType="com.kxmall.market.data.dto.order.OrderDTO">
+        SELECT
+        id,
+        order_no AS orderNo,
+        `status`,
+        actual_price AS actualPrice,
+        gmt_create AS gmtCreate
+        FROM
+        kxmall_order
+        WHERE
+        user_id = #{userId}
+        <if test="status != null and status.size() > 0">
+            and `status` in
+            <foreach collection="status" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+
+    </select>
+
+    <select id="countOrder" resultType="java.lang.Long">
+        SELECT
+            count(1)
+        FROM
+            kxmall_order
+        WHERE
+            user_id = #{userId}
+        <if test="status != null and status != 0">
+            AND `status` = #{status}
+        </if>
+    </select>
+
+    <select id="countOrders" resultType="java.lang.Long">
+        SELECT
+        count(1)
+        FROM
+        kxmall_order
+        WHERE
+        user_id = #{userId}
+        <if test="status != null and status.size() > 0">
+            and `status` in
+            <foreach collection="status" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="selectAreaStatistics" resultType="com.kxmall.market.data.model.KVModel">
+        SELECT
+            `province` AS `key`,
+            count( 1 ) AS `value`
+        FROM
+            kxmall_order
+        WHERE
+            `province` IS NOT NULL
+        GROUP BY
+            `province`
+    </select>
+
+    <select id="selectChannelStatistics" resultType="com.kxmall.market.data.model.KVModel">
+        SELECT
+            `channel` AS `key`,
+            count( 1 ) AS `value`
+        FROM
+            kxmall_order
+        GROUP BY
+            `channel`
+    </select>
+
+    <select id="selectOrderCountStatistics" resultType="com.kxmall.market.data.model.KVModel">
+        SELECT
+            DATE_FORMAT( gmt_create, '%Y-%m-%d' ) AS `key`,
+            count( 1 ) AS `value`
+        FROM
+            kxmall_order AS u
+        WHERE
+            gmt_create &gt; #{gmtStart}
+        GROUP BY
+            `key`;
+    </select>
+
+    <select id="selectOrderSumStatistics" resultType="com.kxmall.market.data.model.KVModel">
+        SELECT
+            DATE_FORMAT( gmt_create, '%Y-%m-%d' ) AS `key`,
+            sum( pay_price ) AS `value`
+        FROM
+            kxmall_order AS u
+        WHERE
+            pay_price IS NOT NULL
+            AND gmt_create &gt; #{gmtStart}
+        GROUP BY
+            `key`;
+    </select>
+
+    <select id="selectExpireOrderNos" resultType="java.lang.String">
+        SELECT
+           order_no
+        FROM
+            kxmall_order
+        WHERE
+            `status` = #{status}
+            AND gmt_update &lt; #{time}
+    </select>
+
+
+    <select id="listByStatus" resultType="com.kxmall.market.data.domain.SubOrderDO"
+            parameterType="com.kxmall.market.data.domain.SubOrderDO">
+        select
+            us.nickname as userName,
+            o.gmt_pay as gmtPay,
+            o.order_no as orderNo,
+            o.address as address,
+            o.phone as phone,
+            o.actual_price as actualPrice,
+            o.gmt_confirm as gmtConfirm,
+            o.channel as channel,
+            o.user_id as userId,
+            o.sku_original_total_price as skuOriginalTotalPrice,
+            o.sku_total_price as skuTotalPrice,
+            o.freight_price as freightPrice,
+            o.coupon_price as couponPrice,
+            o.coupon_id as couponId,
+            o.group_shop_id as groupShopId,
+            o.pay_price as payPrice,
+            o.pay_id as payId,
+            o.pay_channel as payChannel,
+            o.ship_no as shipNo,
+            o.ship_code as shipCode,
+            o.province as province,
+            o.city as city,
+            o.county as county,
+            o.consignee as consignee,
+            o.mono as mono,
+            o.gmt_ship as gmtShip
+            from kxmall_order o
+
+           /* left join kxmall_order_sku sk
+                on sk.order_no = o.order_no */
+
+            left join kxmall_user us
+                on us.id = o.user_id
+
+    </select>
+
+    <select id="getSalesCategoryRank" resultType="com.kxmall.market.data.dto.SalesStatementDTO">
+        select tt.parent_id AS categoryId,tt.category_title as categoryTitle,
+                ifnull(sum(price),0)/100 as totalSalesVolume,count(1) as totalSales from (
+                SELECT spu.category_id,t.parent_id,t.title as category_title,o.store_id,
+                os.sku_id,os.spu_id,os.spu_title,os.title,os.price FROM kxmall_order_sku os
+                LEFT JOIN
+                kxmall_order o
+                on o.order_no = os.order_no
+                LEFT JOIN kxmall_spu spu
+                on os.spu_id = spu.id
+                LEFT JOIN
+                (SELECT c.id,c.parent_id,ca.title FROM `kxmall_category` c
+                    LEFT JOIN kxmall_category ca
+                    on c.parent_id = ca.id
+                    where c.`level` = 1) t
+                on spu.category_id = t.id
+                where o.status in (14,16,20,30,32,34,40,50)
+                and
+                TO_DAYS(o.gmt_update) = TO_DAYS(NOW())
+              <if test="storageId != null">
+                 AND o.store_id = #{storageId}
+              </if>
+          )tt group by tt.parent_id,tt.category_title
+         order by totalSalesVolume,totalSales desc
+         limit 10
+    </select>
+
+    <select id="getSalesCategoryRanTopFive" resultType="com.kxmall.market.data.dto.SalesTopDTO">
+        select tt.parent_id AS categoryId,tt.category_title as categoryTitle,tt.spu_id as spuId,
+         tt.sku_id as skuId,tt.title,ifnull(sum(price),0)/100 as totalSalesVolume,count(1) as totalSales from (
+            SELECT spu.category_id,t.parent_id,t.title as category_title,o.store_id,
+            os.sku_id,os.spu_id,os.spu_title,os.title,os.price FROM kxmall_order_sku os
+            LEFT JOIN
+            kxmall_order o
+            on o.order_no = os.order_no
+            LEFT JOIN kxmall_spu spu
+            on os.spu_id = spu.id
+            LEFT JOIN
+            (SELECT c.id,c.parent_id,ca.title FROM `kxmall_category` c
+                LEFT JOIN kxmall_category ca
+                on c.parent_id = ca.id
+                where c.`level` = 1) t
+            on spu.category_id = t.id
+            where o.status in (14,16,20,30,32,34,40,50)
+            and
+            TO_DAYS(o.gmt_update) = TO_DAYS(NOW())
+            and t.parent_id = #{categoryId}
+            <if test="storageId != null">
+                AND o.store_id = #{storageId}
+            </if>
+       )tt group by tt.parent_id,tt.category_title,tt.spu_id,tt.sku_id,tt.title,tt.price
+      order by totalSalesVolume,totalSales desc
+	  limit 10
+    </select>
+
+    <select id="getTodaySales" resultType="com.kxmall.market.data.dto.SalesStatementDTO">
+        SELECT ifnull(sum(pay_price),0)/100 totalSalesVolume,count(1) totalSales  FROM kxmall_order o
+         where o.status in (14,16,20,30,32,34,40,50)
+        <if test="storageId != null">
+            AND o.store_id = #{storageId}
+        </if>
+		 and
+		 TO_DAYS(o.gmt_update) = TO_DAYS(NOW())
+    </select>
+
+    <select id="getYesterdaySales" resultType="com.kxmall.market.data.dto.SalesStatementDTO">
+        SELECT ifnull(sum(pay_price),0)/100 totalSalesVolume,count(1) totalSales  FROM kxmall_order o
+         where o.status in (14,16,20,30,32,34,40,50)
+        <if test="storageId != null">
+            AND o.store_id = #{storageId}
+        </if>
+		 and
+		 TO_DAYS( NOW( ) ) - TO_DAYS(o.gmt_update) = 1
+    </select>
+
+    <select id="getSalesByHour" resultType="com.kxmall.market.data.dto.SalesStatementDTO">
+    SELECT ifnull(sum(pay_price),0)/100 totalSalesVolume,ifnull(count(1),0) totalSales  FROM kxmall_order o
+         where o.status in (14,16,20,30,32,34,40,50)
+        <if test="storageId != null">
+            AND o.store_id = #{storageId}
+        </if>
+		and o.gmt_update BETWEEN #{start} and #{end}
+    </select>
+
+</mapper>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kxmall.market.data.mapper.RecommendMapper">
+
+    <insert id="insertBtach">
+        INSERT ignore into kxmall_recommend (
+        spu_id,
+        recommend_type,
+        gmt_create,
+        gmt_update
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+        (
+            #{item.spuId},#{item.recommendType},#{item.gmtCreate},#{item.gmtUpdate}
+        )
+        </foreach>
+    </insert>
+
+    <select id="getRecommendByType" resultType="com.kxmall.market.data.dto.RecommendDTO">
+
+        SELECT
+          re.id as id,
+          re.recommend_type as recommendType,
+          re.spu_id as spuId,
+          sp.original_price  as spuOriginalPrice,
+          sp.price as spuPrice,
+          sp.vip_price as spuVipPrice,
+          sp.sales as spuSales,
+          sp.img as spuImg,
+          sp.title as spuTitle,
+          sp.category_id as spuCategoryId
+        FROM
+          kxmall_recommend re,
+          kxmall_spu sp
+        WHERE
+          re.spu_id = sp.id
+          and re.recommend_type = #{recommendType}
+        limit #{offset},#{pageSize}
+    </select>
+
+
+    <select id="getRecommendByTypeCount" resultType="java.lang.Integer">
+        SELECT
+          count(re.id)
+        FROM
+          kxmall_recommend re,
+          kxmall_spu sp
+        WHERE
+          re.spu_id = sp.id
+          and re.recommend_type = #{recommendType}
+    </select>
+
+
+    <select id="getAllRecommend" resultType="com.kxmall.market.data.dto.RecommendDTO">
+
+        SELECT
+        re.id as id,
+        re.recommend_type as recommendType,
+        re.spu_id as spuId,
+        sp.original_price  as spuOriginalPrice,
+        sp.price as spuPrice,
+        sp.vip_price as spuVipPrice,
+        sp.sales as spuSales,
+        sp.img as spuImg,
+        sp.title as spuTitle,
+        sp.category_id as spuCategoryId
+        FROM
+        kxmall_recommend re,
+        kxmall_spu sp
+        WHERE
+        re.spu_id = sp.id
+        limit #{offset},#{pageSize}
+    </select>
+
+    <select id="getAllRecommendCount" resultType="java.lang.Integer">
+        SELECT
+        COUNT(re.id)
+        FROM
+        kxmall_recommend re,
+        kxmall_spu sp
+        WHERE
+        re.spu_id = sp.id
+    </select>
+
+
+    <select id="getRecommendByStorage" resultType="com.kxmall.market.data.dto.RecommendDTO">
+        SELECT
+        re.id as id,
+        re.recommend_type as recommendType,
+        re.spu_id as spuId,
+        sp.original_price as spuOriginalPrice,
+        st.price as spuPrice,
+        sp.vip_price as spuVipPrice,
+        st.sales as spuSales,
+        sp.img as spuImg,
+        sp.title as spuTitle,
+        sp.category_id as spuCategoryId,
+        st.sku_id as skuId,
+        sp.unit as spuUnit,
+        0 as activityId,
+        0 as couponId
+        FROM
+        kxmall_recommend re,
+        kxmall_spu sp
+        left join kxmall_stock st on st.spu_id = sp.id
+        WHERE
+        re.spu_id = sp.id
+        and sp.id in (select c.spu_id from kxmall_stock c where c.status = 1 and c.storage_id = #{storageId})
+        and st.storage_id = #{storageId}
+        and re.recommend_type = #{recommendType}
+        and sp.status = 1
+        <if test="recommendType == 11">
+            and sp.id not in (select tt.spu_id from kxmall_recommend tt where tt.recommend_type = 1)
+            order by st.sales
+        </if>
+    </select>
+
+
+    <select id="getRecommendByStorageCount" resultType="java.lang.Integer">
+        SELECT count(re.id)
+        FROM
+        kxmall_recommend re,
+        kxmall_spu sp
+        left join kxmall_stock st on st.spu_id = sp.id
+        WHERE
+        re.spu_id = sp.id
+        and sp.id in (select c.spu_id from kxmall_stock c where c.status = 1 and c.storage_id = #{storageId})
+        and st.storage_id = #{storageId}
+        and re.recommend_type = #{recommendType}
+        and sp.status = 1
+        <if test="recommendType == 11">
+            and sp.id not in (select tt.spu_id from kxmall_recommend tt where tt.recommend_type = 1)
+            order by st.sales
+        </if>
+    </select>
+
+</mapper>

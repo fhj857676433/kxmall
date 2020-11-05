@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kxmall.market.data.mapper.CartMapper">
+
+    <select id="countCart" resultType="java.lang.Integer">
+        SELECT
+            sum( c.num )
+        FROM
+            kxmall_cart AS c
+        WHERE
+            c.user_id = #{userId}
+    </select>
+
+    <select id="getCartList" resultType="com.kxmall.market.data.dto.CartDTO">
+        SELECT
+            c.id,
+            c.sku_id AS skuId,
+            c.num,
+            p.title,
+            s.price,
+            p.original_price AS originalPrice,
+            k.title AS skuTitle,
+            p.img AS spuImg,
+            k.img AS skuImg,
+            s.stock,
+            k.spu_id AS spuId,
+            p.category_id AS categoryId,
+            c.activity_id AS activityId,
+            c.coupon_id AS couponId,
+            c.gmt_update AS gmtUpdate,
+            c.gmt_create AS gmtCreate
+        FROM
+            kxmall_cart AS c,
+            kxmall_sku AS k,
+            kxmall_spu AS p,
+            kxmall_stock as s
+        WHERE
+            c.user_id = #{userId}
+            AND c.sku_id = k.id
+            AND k.spu_id = p.id
+            AND p.id = s.spu_id
+            and c.sku_id = s.sku_id
+            and s.storage_id = #{storageId}
+            and c.activity_id = 0
+        union all
+            SELECT
+            c.id,
+            c.sku_id AS skuId,
+            c.num,
+            p.title,
+            couponSku.discount_price as price,
+            p.original_price AS originalPrice,
+            k.title AS skuTitle,
+            p.img AS spuImg,
+            k.img AS skuImg,
+            couponSku.limit_num as stock,
+            k.spu_id AS spuId,
+            p.category_id AS categoryId,
+            c.activity_id AS activityId,
+            c.coupon_id AS couponId,
+            c.gmt_update AS gmtUpdate,
+            c.gmt_create AS gmtCreate
+        FROM
+            kxmall_cart AS c,
+            kxmall_sku AS k,
+            kxmall_spu AS p,
+            kxmall_stock as s,
+            kxmall_coupon_sku as couponSku
+        WHERE
+            c.user_id = #{userId}
+            AND c.sku_id = k.id
+            AND k.spu_id = p.id
+            AND p.id = s.spu_id
+            and couponSku.coupon_id = c.coupon_id
+            and couponSku.spu_id = s.spu_id
+            and c.sku_id = s.sku_id
+            and s.storage_id = #{storageId}
+            and c.activity_id not in (0)
+    </select>
+
+</mapper>

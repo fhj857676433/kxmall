@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kxmall.market.data.mapper.SpuMapper">
+
+    <update id="incSales">
+        UPDATE kxmall_spu SET sales = sales + #{delta} WHERE id = #{spuId}
+    </update>
+
+    <select id="getSpuTitleByCategoryId" resultType="com.kxmall.market.data.domain.SpuDO">
+        SELECT id,title FROM kxmall_spu WHERE category_id = #{categroyId}
+    </select>
+
+    <select id="getSpuTitleAll" resultType="com.kxmall.market.data.domain.SpuDO">
+        SELECT id,title,category_id as categoryId FROM kxmall_spu ORDER BY category_id
+    </select>
+
+    <select id="selectSpuById" resultType="com.kxmall.market.data.domain.SpuDO">
+        SELECT
+        id,title,
+        original_price as originalPrice,
+        price,
+        title,
+        sales,
+        img,
+        detail,
+        description,
+        category_id as categoryId,
+        freight_template_id AS freightTemplateId,
+        unit,
+        status,
+        gmt_update AS gmtUpdate,
+        gmt_create AS gmtCreate
+        FROM kxmall_spu WHERE id = #{id}
+    </select>
+
+    <select id="selectAllId" resultType="Long">
+         SELECT
+         id
+         FROM kxmall_spu
+         order by id
+    </select>
+
+
+
+
+
+    <!--查询详情-->
+    <!--<resultMap id="detailMap" type="SpuDTO" autoMapping="true">
+        <id column="id" property="id"/>
+        <collection property="stockDto" columnPrefix="list." ofType="StockDTO" autoMapping="true" />
+    </resultMap>-->
+
+
+    <select id="selectPageByStorage" resultType="com.kxmall.market.data.dto.goods.SpuDTO">
+        select
+        a.id,a.title,
+        a.original_price as originalPrice,
+        b.price as 'stockDto.price',
+        a.title,
+        a.img,
+        a.detail,
+        a.description,
+        a.category_id as categoryId,
+        a.freight_template_id AS freightTemplateId,
+        a.unit,
+        a.status,
+        a.gmt_update AS gmtUpdate,
+        a.gmt_create AS gmtCreate,
+        b.sales as 'stockDto.sales',
+        b.stock as 'stockDto.stock',
+        b.sku_id as skuId,
+        0 as 'skuDto.activityId',
+        0 as 'skuDto.couponId'
+        from  kxmall_spu a
+        LEFT JOIN kxmall_stock b on a.id = b.spu_id
+        WHERE a.id in (select c.spu_id from kxmall_stock c where c.status = 1 and  c.storage_id = #{storageId})
+        and b.storage_id = #{storageId}
+        and a.status = 1
+        <if test="title != null">
+            and a.title like CONCAT('%',#{title},'%')
+        </if>
+        <if test="categoryId != null">
+            and a.category_id = #{categoryId}
+        </if>
+        <if test="childrenIds != null and childrenIds.size()!=0">
+            and a.category_id in
+            <foreach collection="childrenIds" item="list" index="index" open="(" close=")" separator=",">
+                #{list}
+            </foreach>
+        </if>
+        <if test="orderBy != null">
+            order by ${orderBy} <if test="isAsc"> asc </if> <if test="!isAsc"> desc </if>
+        </if>
+    </select>
+
+    <select id="selectCountByStorage" resultType="java.lang.Integer">
+        select count(a.id)
+        from  kxmall_spu a
+        LEFT JOIN kxmall_stock b on a.id = b.spu_id
+        WHERE a.id in (select c.spu_id from kxmall_stock c where c.status = 1 and  c.storage_id = #{storageId})
+        and a.status = 1
+        <if test="title != null">
+            and a.title like CONCAT('%',#{title},'%')
+        </if>
+        <if test="categoryId != null">
+            and a.category_id = #{categoryId}
+        </if>
+        <if test="childrenIds != null and childrenIds.size()!=0">
+            and a.category_id in
+            <foreach collection="childrenIds" item="list" index="index" open="(" close=")" separator=",">
+                #{list}
+            </foreach>
+        </if>
+        <if test="orderBy != null">
+            order by ${orderBy} <if test="isAsc"> asc </if> <if test="!isAsc"> desc </if>
+        </if>
+    </select>
+
+
+
+
+    <select id="selectActivityGoodsList" resultType="com.kxmall.market.data.dto.goods.SpuDTO">
+        select
+        spu.id,spu.title,
+        spu.original_price as originalPrice,
+        couponSku.discount_price as 'stockDto.price',
+        spu.title,
+        spu.img,
+        spu.detail,
+        spu.description,
+        spu.category_id as categoryId,
+        spu.freight_template_id AS freightTemplateId,
+        spu.unit,
+        spu.status,
+        spu.gmt_update AS gmtUpdate,
+        spu.gmt_create AS gmtCreate,
+        0 as 'stockDto.sales',
+        couponSku.sku_id as skuId,
+        activity.id as activityId,
+        coupon.id as couponId
+        from kxmall_activity activity
+        LEFT JOIN kxmall_activity_coupon activityCoupon on activityCoupon.activity_id = activity.id
+        LEFT JOIN kxmall_coupon coupon on coupon.id = activityCoupon.coupon_id
+        LEFT JOIN kxmall_coupon_sku couponSku on couponSku.coupon_id = coupon.id
+        LEFT JOIN kxmall_spu spu on spu.id = couponSku.spu_id
+        where activity.activity_type = #{activityType} and activity.status = 1
+
+    </select>
+
+
+    <select id="selectByActivityGood" resultType="com.kxmall.market.data.domain.SpuDO">
+        SELECT
+        spu.id,spu.title,
+        spu.original_price as originalPrice,
+        spu.price,
+        spu.title,
+        spu.sales,
+        spu.img,
+        spu.detail,
+        spu.description,
+        spu.category_id as categoryId,
+        spu.freight_template_id AS freightTemplateId,
+        spu.unit,
+        spu.status,
+        spu.gmt_update AS gmtUpdate,
+        spu.gmt_create AS gmtCreate
+        from kxmall_coupon coupon
+        LEFT JOIN kxmall_coupon_sku couponSku on couponSku.coupon_id = coupon.id
+        LEFT JOIN kxmall_spu spu on spu.id = couponSku.spu_id
+        WHERE coupon.id = #{couponId} and spu.id = #{spuId}
+    </select>
+
+
+    <select id="selectActivityGoodsListByStorageId" resultType="com.kxmall.market.data.dto.goods.SpuDTO">
+        select
+        spu.id,spu.title,
+        spu.original_price as originalPrice,
+        couponSku.discount_price as 'stockDto.price',
+        spu.title,
+        spu.img,
+        spu.detail,
+        spu.description,
+        spu.category_id as categoryId,
+        spu.freight_template_id AS freightTemplateId,
+        spu.unit,
+        spu.status,
+        spu.gmt_update AS gmtUpdate,
+        spu.gmt_create AS gmtCreate,
+        couponSku.limit_num-couponSku.use_num as 'stockDto.sales',
+        couponSku.sku_id as skuId,
+        activity.id as activityId,
+        coupon.id as couponId
+        from kxmall_activity activity
+        LEFT JOIN kxmall_activity_coupon activityCoupon on activityCoupon.activity_id = activity.id
+        LEFT JOIN kxmall_coupon coupon on coupon.id = activityCoupon.coupon_id
+        LEFT JOIN kxmall_coupon_sku couponSku on couponSku.coupon_id = coupon.id
+        LEFT JOIN kxmall_spu spu on spu.id = couponSku.spu_id
+        left join kxmall_stock stock on stock.spu_id = spu.id
+        where activity.activity_type = #{activityType} and stock.storage_id = #{storageId}
+    </select>
+
+</mapper>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kxmall.market.data.mapper.ActivityMapper">
+
+
+    <select id="selectActivityPage" resultType="com.kxmall.market.data.dto.ActivityDTO">
+        select
+        ac.id,
+        ac.title,
+        ac.activity_type AS activityType,
+        ac. STATUS,
+        ac.user_id AS userId,
+        ac.activity_start_time AS activityStartTime,
+        ac.activity_end_time AS activityEndTime,
+        ac.remark,
+        ac.gmt_create AS gmtCreate,
+        ac.gmt_update AS gmtUpdate,
+        IFNULL(ad.username,'默认管理员') as 'adminDTO.username' from kxmall_activity ac
+        left join kxmall_admin ad on ad.id = ac.user_id
+        where 1=1
+        <if test="title != null">
+            AND ac.title like CONCAT('%',#{title},'%')
+        </if>
+        <if test="activityType != null ">
+            AND ac.activity_type = #{activityType}
+        </if>
+        <if test="status != null ">
+            AND ac.status = #{status}
+        </if>
+        <if test="activityStartTime != null ">
+            <![CDATA[
+                AND unix_timestamp(ac.activity_start_time) < activityStartTime
+             ]]>
+        </if>
+        <if test="activityEndTime != null ">
+            <![CDATA[
+                AND unix_timestamp(ac.activity_end_time) > activityEndTime
+             ]]>
+        </if>
+        order by ac.id desc
+    </select>
+
+    <select id="selectOneById" resultType="com.kxmall.market.data.dto.ActivityDTO">
+        select
+        ac.id,
+        ac.title,
+        ac.activity_type AS activityType,
+        ac. STATUS,
+        ac.user_id AS userId,
+        ac.activity_start_time AS activityStartTime,
+        ac.activity_end_time AS activityEndTime,
+        ac.remark,
+        ac.gmt_create AS gmtCreate,
+        ac.gmt_update AS gmtUpdate
+        from kxmall_activity ac
+        where ac.id = #{id}
+    </select>
+    <select id="selectOneByType" resultMap="detailMap">
+        select
+        ac.id,
+        ac.title,
+        ac.activity_type AS activityType,
+        ac. STATUS,
+        ac.user_id AS userId,
+        ac.activity_start_time AS activityStartTime,
+        ac.activity_end_time AS activityEndTime,
+        ac.remark,
+        ac.pull_new as 'pullNew',
+        ac.pull_num as 'pullNum',
+        ac.qualify_old as 'qualifyOld',
+        ac.qualify_new as 'qualifyNew',
+        ac.gmt_create AS gmtCreate,
+        ac.gmt_update AS gmtUpdate,
+        ac.url AS url,
+        acco.coupon_id as 'list.couponId'
+        from kxmall_activity ac
+        LEFT JOIN kxmall_activity_coupon acco on acco.activity_id = ac.id
+        where ac.activity_type = #{type} and ac.status = 1
+    </select>
+
+
+    <!--查询详情-->
+    <resultMap id="detailMap" type="com.kxmall.market.data.dto.ActivityDTO" autoMapping="true">
+        <id column="id" property="id"/>
+        <collection property="activityCounponDO" columnPrefix="list." ofType="com.kxmall.market.data.domain.ActivityCounponDO" autoMapping="true" />
+    </resultMap>
+
+</mapper>

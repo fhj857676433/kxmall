@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kxmall.market.data.mapper.OrderSkuMapper">
+
+    <insert id="insertBatch">
+        INSERT ignore into kxmall_order_sku (sku_id,spu_id,order_id,order_no,spu_title,title,bar_code,num,unit,original_price,price,img,gmt_update,gmt_create)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.skuId},#{item.spuId},#{item.orderId},#{item.orderNo},#{item.spuTitle},#{item.title},#{item.barCode},#{item.num},#{item.unit},#{item.originalPrice},#{item.price},#{item.img},#{item.gmtUpdate},#{item.gmtCreate})
+        </foreach>
+    </insert>
+
+</mapper>

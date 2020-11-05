@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kxmall.market.data.mapper.InviteMapper">
+
+
+    <select id="selectInviteByList" resultType="com.kxmall.market.data.dto.InviteDTO">
+        SELECT
+        inv.id,
+        us.nickname as 'userDO.nickname',
+        us.phone as 'userDO.phone',
+        us.avatar_url as 'userDO.avatarUrl'
+        from kxmall_invite inv
+        right join kxmall_user us on us.id = inv.beinvite_id
+        where inv.invite_id = #{userId} and inv.status = 1
+    </select>
+
+    <select id="selectInviteByCount" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        from kxmall_invite inv
+        right join kxmall_user us on us.id = inv.beinvite_id
+        where inv.invite_id = #{userId} and inv.status = 1
+    </select>
+
+</mapper>

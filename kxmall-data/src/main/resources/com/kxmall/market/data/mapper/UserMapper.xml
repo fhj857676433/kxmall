@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kxmall.market.data.mapper.UserMapper">
+
+
+    <select id="login" resultType="com.kxmall.market.data.dto.UserDTO">
+        SELECT
+            id,
+            phone,
+            login_type AS loginType,
+            open_id AS openId,
+            nickname,
+            avatar_url AS avartarUrl,
+            `level`,
+            birthday,
+            gender,
+            gmt_last_login AS gmtLastLogin,
+            last_login_ip AS lastLoginIp,
+            `status`,
+            gmt_update AS gmtUpdate,
+            gmt_create AS gmtCreate
+        FROM
+            kxmall_user
+        WHERE
+            phone = #{phone} AND `password` = #{cryptPassword}
+    </select>
+
+
+    <select id="getUserList" resultType="com.kxmall.market.data.domain.UserDO">
+        SELECT
+        id,
+        phone,
+        password,
+        login_type as loginType,
+        open_id as openId,
+        nickname,
+        avatar_url AS avartarUrl,
+        `level`,
+        birthday,
+        gender,
+        gmt_last_login AS gmtLastLogin,
+        last_login_ip AS lastLoginIp,
+        `status`,
+        gmt_update AS gmtUpdate,
+        gmt_create AS gmtCreate
+        FROM
+        kxmall_user
+        WHERE
+        1 = 1
+        <if test="phone != null">
+            AND phone like concat(concat("%",#{phone}),"%")
+        </if>
+        <if test="nickname != null">
+            AND nickname like concat(concat("%",#{nickname}),"%")
+        </if>
+        <if test="level != null">
+            AND `level` = #{level}
+        </if>
+        <if test="gender != null">
+            AND gender = #{gender}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        limit #{offset},#{limit}
+    </select>
+
+
+    <select id="countUser" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        FROM
+        kxmall_user
+        WHERE
+        1 = 1
+        <if test="phone != null">
+            AND phone like concat(concat("%",#{phone}),"%")
+        </if>
+        <if test="nickname != null">
+            AND nickname like concat(concat("%",#{nickname}),"%")
+        </if>
+        <if test="level != null">
+            AND `level` = #{level}
+        </if>
+        <if test="gender != null">
+            AND gender = #{gender}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+    <select id="countTotalUser" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        FROM
+        kxmall_user
+        WHERE
+        gmt_create &lt;= #{gmtCreate}
+    </select>
+
+    <select id="countNewUser" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        FROM
+        kxmall_user
+        WHERE
+        gmt_create between #{start} and #{end}
+    </select>
+
+
+    <select id="countOnlineUser" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        FROM
+        kxmall_user
+        WHERE
+        gmt_last_login between #{start} and #{end}
+    </select>
+
+    <select id="countOrderUser" resultType="java.lang.Integer">
+        SELECT count(DISTINCT(o.user_id)) as num FROM `kxmall_order` o
+        where o.status in (20,30,40,50)
+        and
+        gmt_update between #{start} and #{end}
+    </select>
+
+    <select id="countFirstOrderUser" resultType="java.lang.Integer">
+        SELECT count(DISTINCT(o.user_id)) as num FROM `kxmall_order` o
+        left join kxmall_user u on o.user_id = u.id
+        where u.gmt_create between #{start} and #{start}
+        and o.gmt_create between #{start} and #{start}
+    </select>
+
+</mapper>

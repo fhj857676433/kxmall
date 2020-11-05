@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kxmall.market.data.mapper.StorageMapper">
+    <select id="getStorageNameAll" resultType="com.kxmall.market.data.domain.StorageDO">
+        select u.id,u.name from kxmall_storage AS u where u.state = #{state}
+    </select>
+
+    <select id="selectNomralStorageByTownCodeAndOutsourcingRectangular"
+            resultType="com.kxmall.market.data.domain.StorageDO">
+        SELECT
+            u.id,
+            u.name,
+            u.province,
+            u.city,
+            u.county,
+            u.address,
+            u.remark,
+            u.state,
+            u.leader_name AS leaderName,
+            u.area_id AS areaId,
+            u.delivery_radius AS deliveryRadius,
+            u.latitude,
+            u.longitude,
+            u.operating_state AS operatingState,
+            u.business_start_time  AS businessStartTime,
+            u.delivery_start_time AS deliveryStartTime,
+            u.business_stop_time AS businessStopTime,
+            u.delivery_stop_time AS deliveryStopTime
+        FROM
+            kxmall_storage AS u,
+        WHERE
+            u.state=1
+            AND u.longitude BETWEEN #{minlng} AND #{maxlng}
+            AND u.latitude  BETWEEN #{minlat} AND #{maxlat}
+    </select>
+
+
+    <update id="batchUpdateState" parameterType="map">
+        UPDATE kxmall_storage SET state = #{state} WHERE id in
+        <foreach collection="ids" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="batchUpdateOperatingState" parameterType="map">
+        UPDATE kxmall_storage SET operating_state = #{operatingState} WHERE id in
+        <foreach collection="ids" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="selectStorageById" resultType="com.kxmall.market.data.domain.StorageDO">
+        SELECT
+            u.id,
+            u.name,
+            u.province,
+            u.city,
+            u.county,
+            u.address,
+            u.remark,
+            u.state,
+            u.longitude,
+            u.latitude,
+            u.automatic,
+            u.gmt_update AS gmtUpdate,
+            u.gmt_create AS gmtCreate,
+            u.gmt_update_user_id AS gmtUpdateUserId,
+            u.gmt_create_user_id AS gmtCreateUserId,
+            u.operating_state AS operatingState
+        FROM
+            kxmall_storage AS u
+        WHERE
+            u.id = #{id}
+    </select>
+
+    <select id="selectIds" resultType="Long">
+        select id from kxmall_storage
+    </select>
+
+</mapper>

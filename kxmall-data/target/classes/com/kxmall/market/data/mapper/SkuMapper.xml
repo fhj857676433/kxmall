@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kxmall.market.data.mapper.SkuMapper">
+
+    <resultMap id="BaseSkuDTOResultMap" type="com.kxmall.market.data.dto.goods.SkuDTO">
+        <result column="spuId" property="spuId" jdbcType="INTEGER"/>
+        <result column="barCode" property="barCode" jdbcType="VARCHAR"/>
+        <result column="categoryId" property="categoryId" jdbcType="INTEGER"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="spuTitle" property="spuTitle" jdbcType="VARCHAR"/>
+        <result column="img" property="img" jdbcType="VARCHAR"/>
+        <result column="spuImg" property="spuImg" jdbcType="VARCHAR"/>
+        <result column="unit" property="unit" jdbcType="VARCHAR"/>
+        <result column="discount" property="discount" jdbcType="DOUBLE"/>
+        <result column="activityId" property="activityId" jdbcType="INTEGER"/>
+        <result column="couponId" property="couponId" jdbcType="INTEGER"/>
+        <result column="originalPrice" property="spuDO.originalPrice" jdbcType="INTEGER"/>
+        <result column="stock" property="stockDTO.stock" jdbcType="INTEGER"/>
+        <result column="price" property="stockDTO.price" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <update id="decSkuStock">
+        UPDATE kxmall_sku SET stock = stock - #{stock}, freeze_stock = freeze_stock + #{stock} WHERE id = #{skuId}
+    </update>
+
+    <select id="getSkuDTOById" resultType="com.kxmall.market.data.dto.goods.SkuDTO">
+        SELECT
+            k.id,
+            k.spu_id AS spuId,
+            k.bar_code AS barCode,
+            p.category_id AS categoryId,
+            k.title,
+            p.title AS spuTitle,
+            k.img,
+            p.img AS spuImg,
+            k.original_price AS originalPrice,
+            k.price,
+            k.vip_price AS vipPrice,
+            k.stock,
+            p.unit,
+            k.freeze_stock AS freezeStock,
+            k.gmt_update AS gmtUpdate,
+            k.gmt_create AS gmtCreate
+        FROM
+            kxmall_sku AS k,
+            kxmall_spu AS p
+        WHERE
+            k.id = #{skuId}
+            AND k.spu_id = p.id
+    </select>
+
+    <select id="getSkuDTOBySkuIdAndStorageId" resultMap="BaseSkuDTOResultMap">
+            SELECT
+                k.id,
+                k.spu_id AS spuId,
+                k.bar_code AS barCode,
+                p.category_id AS categoryId,
+                k.title,
+                p.title AS spuTitle,
+                k.img,
+                p.img AS spuImg,
+                p.original_price AS originalPrice,
+                s.price AS price,
+                k.vip_price AS vipPrice,
+                p.unit,
+                k.freeze_stock AS freezeStock,
+                k.gmt_update AS gmtUpdate,
+                k.gmt_create AS gmtCreate,
+                s.stock AS stock
+                    FROM kxmall_sku AS k
+                JOIN kxmall_spu AS p
+                    ON k.id = #{skuId}
+                    AND k.spu_id = p.id
+                JOIN  kxmall_stock AS s
+                    ON  s.sku_id = k.id
+                    AND s.storage_id = #{storageId}
+    </select>
+
+
+    <select id="getSkuIds" resultType="java.lang.Long">
+        SELECT id FROM kxmall_sku WHERE spu_id = #{spuId}
+    </select>
+
+    <select id="selectSkuIdsBySpuIds" resultType="java.lang.Long">
+        SELECT id FROM kxmall_sku WHERE spu_id in
+        <foreach collection="ids" separator="," open="(" close=")" item="spuId">
+            #{spuId}
+        </foreach>
+    </select>
+
+    <select id="selectCodes" resultType="String">
+        select bar_code from kxmall_sku
+    </select>
+</mapper>

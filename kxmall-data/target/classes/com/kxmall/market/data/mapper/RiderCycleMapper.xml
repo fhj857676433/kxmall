@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kxmall.market.data.mapper.RiderCycleMapper">
+
+    <insert id="insertBatch">
+        INSERT ignore into rider_cycle (
+        rider_id,
+        week_number
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.riderId},#{item.weekNumber})
+        </foreach>
+    </insert>
+
+</mapper>

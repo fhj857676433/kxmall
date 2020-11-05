@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kxmall.market.data.mapper.RiderOrderMapper">
+
+    <select id="selectRiderOrderExpireOrderNos" resultType="java.lang.String">
+        SELECT
+        order_no
+        FROM
+        rider_order
+        WHERE
+        `status` = #{status}
+        AND predict_time &lt; #{time}
+    </select>
+
+    <update id="updateRiderOrderListStatus" parameterType="map">
+        UPDATE rider_order SET status = #{status} WHERE order_no in
+        <foreach collection="orderNoList" separator="," open="(" close=")" item="orderNo">
+            #{orderNo}
+        </foreach>
+    </update>
+
+    <update id="updateRiderOrderStatus" parameterType="map">
+        UPDATE rider_order SET status = #{status}
+        <if test="updateAbnormalFlag!=null and updateAbnormalFlag">
+            , abnormal= #{status}
+        </if>
+        WHERE order_no=#{orderNo}
+    </update>
+
+    <select id="statisticalCount" resultType="com.kxmall.market.data.dto.rider.RiderStatisticalDTO">
+    select count(1) as count ,status  from rider_order WHERE rider_id=#{riderId} GROUP  BY rider_id,status
+    </select>
+</mapper>
