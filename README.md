@@ -8,60 +8,55 @@ QQ讨论群：865607763 (进群前，请在网页右上角点star)
 ---
 #### 优先更新地址
 
-[01-kxmall用户端源码地址](https://gitee.com/shoujing1001/kxmall/)
+kxmall项目结构:
 
-[02-kxmall服务端源码地址](https://gitee.com/ybyt123/kxmall)
+- Java 后端服务
+    - kxmall-admin: 启动器（打包打这个就行）
+    - kxmall-admin-api: 提供管理员管理系统的WebApi
+    - kxmall-app-api: 提供APP、小程序、H5用户请求的WebApi
+    - kxmall-biz: 提供通用业务代码
+    - kxmall-data: 提供数据模型以及数据访问层封装
+    - kxmall-core: 提供注解、工具类等
+    
+- Vue 前端页面
+    - kxmall-admin-ui: 基于element-ui的后台管理页面
+    - kxmall-app-ui: 基于uniapp的小程序、H5、APP前端代码
 
-[03-kxmall后台管理端源码地址](https://gitee.com/zhengkaixing/kxmall-ui.git)
+- sql: 数据库初始化SQL脚本
 
-[04-kxmall骑手端源码地址](https://gitee.com/shoujing1001/kxmall-hourseman)
+#### 数据库初始化sql文件，请进入讨论交流群，群文件自行下载，欢迎讨论与交流
+---
+#### 优先更新地址
+
+[01-kxmall源码地址](https://github.com/zhengkaixing/kxmall) https://github.com/zhengkaixing/kxmall
 
 ---
 
-#### 视频教程
-
-[01-kxmall微信B2C商城搭建-搭建开发环境](https://www.bilibili.com/video/av85227442/)
-
-[02-kxmall微信B2C商城搭建-本地运行前后端代码](https://www.bilibili.com/video/av85237640/)
-
-[03-kxmall微信B2C商城搭建-打包上传到服务器运行（前后端）](https://www.bilibili.com/video/av85244186/)
-
 #### 用户端系统演示
 
-下面分别是微信小程序包和Android安装Apk。因为苹果开发者ID太贵，所以这里没有打包，实际也可同时支持苹果的。
+下面是微信小程序真机模式调试的界面，可Android安装Apk,也可同时支持苹果。
 在这基础上，还增加了H5。可内置到微信公众号上，变成公众号商城！尽情体验！
 
 
 ---
 | 河禾生鲜 | 河禾生鲜 | 河禾生鲜 |
 | :----: | :----: | :----: |
-| ![河禾生鲜](https://images.gitee.com/uploads/images/2020/0422/222247_2cfd32fc_3044973.jpeg)  | ![河禾生鲜](https://images.gitee.com/uploads/images/2020/0422/222248_99d41ffb_3044973.jpeg) | ![河禾生鲜](https://images.gitee.com/uploads/images/2020/0422/222248_4d595984_3044973.jpeg) |
-| ![河禾生鲜](https://images.gitee.com/uploads/images/2020/0422/222248_d7ab2977_3044973.jpeg)  | ![河禾生鲜](https://images.gitee.com/uploads/images/2020/0422/222248_f0f1fc0c_3044973.jpeg) | ![河禾生鲜](https://images.gitee.com/uploads/images/2020/0422/222249_7e26e581_3044973.jpeg) |
+| ![河禾生鲜](doc/kxmall-app-1.jpeg)  | ![河禾生鲜](doc/kxmall-app-2.jpeg) | ![河禾生鲜](doc/kxmall-app-3.jpeg) |
+| ![河禾生鲜](doc/kxmall-app-4.jpeg)  | ![河禾生鲜](doc/kxmall-app-5.jpeg) | ![河禾生鲜](doc/kxmall-app-6.jpeg) |
 
 #### 后台端系统演示
 
-- [后台演示地址链接<--点击](http://121.196.31.198/)
+使用免费开源框架vue-element-admin，基于element-ui的后台管理页面！尽情体验！
+
+
+---
+ 
+![河禾生鲜](doc/kxmall-admin-1.png)  
+![河禾生鲜](doc/kxmall-admin-2.png)  
+![河禾生鲜](doc/kxmall-admin-3.png)   
+
 - 登录名:guest   密码:123456   验证码:666666 (guest仅有只读权限)
 
-
-#### 骑手端系统演示
-
-
-#### 插件中心
-
-kxmall主程序功能均项目中，包括其基本的订单、商品、广告、优惠券、运费模板、VIP等等功能。后续功能将以插件的形式陆续提供。插件使用主程序模板方法的形式实现。具有自动安装的功能，尽量减少对主代码入侵。插件并无太多学习价值，所以仅对授权用户开放，并且每个插件单独收费。
-
-**1.点餐列表**   部分开发者也许需要点餐列表，用于外卖、社区超市、生鲜线下配送等场景。
-
-**2.自动发货**  部分商家售卖虚拟物品，例如话费、网游充值卡。自创作视频教程等。使用自动发货插件可自动将卡密发送到用户微信上。
-
-更多插件，敬请期待！
-
-#### kxmall 基本框架
-
-kxmall使用前后分离的设计、后端采用Java编写，前端均适用vuejs编写。
-
-![架构图](snapshoot/framework.png)
 
 #### 项目部署方式
 
@@ -69,7 +64,6 @@ kxmall使用前后分离的设计、后端采用Java编写，前端均适用vuej
 
 ##### ⓪ 服务器推荐
 服务器可根据自身业务来选购，单机环境推荐2C4G
-[阿里云新用户服务器优惠链接](https://www.aliyun.com/minisite/goods?userCode=3prh4omm)
 
 ##### ① 基础运行环境
 
@@ -99,30 +93,22 @@ Redis安装可直接使用yum安装
 
 ##### ③ 编译部署前后端代码
 
-项目部署分为 Register Server、Rider Server、Admin Server 、 App 、Rider App  五个部分
+项目部署分为 Admin/App Server 、 App 、 Admin  三个部分
 
 [部署Step1:Java后台编译&部署](doc/server.md)    
 
-1.服务器安装必备软件[JDK | mysql | Redis | RabbitMq | Nginx]  
-2.先启注册中心： market-register  
-3.然后启动其它服务，其它服务不分先后  
+1.服务器安装必备软件[JDK | mysql | Redis | Nginx]   
+2.启动服务 
 
 [部署Step2:App编译打包](doc/app.md)
 
 [部署Step3:Admin编译打包](doc/admin.md)
 
-##### ④ 二次开发文档
-
-[二次开发文档](doc/2develop.md)
 
 #### 版权声明
 
-本项目后端由云伴工作室开发，禁止未经授权用于商业用途。个人学习可免费使用。如需商业授权，进QQ讨论群（865607763）联系群主。
+本项目后端由云伴工作室开发，禁止未经授权用于商业用途。个人学习可免费使用。如需商业授权-授权针对前段代码和后端代码商用授权，进QQ讨论群（865607763）联系群主。
 
-
-前端代码使用的 mix.R 的开源模板，在此模板的基础上对接了kxmall后端Api，作者说不做商用限制，保留原地址，所以授权仅针对后端代码商用授权。
-
-mix模板地址：https://ext.dcloud.net.cn/plugin?id=200
 
 ### 更多服务
 
