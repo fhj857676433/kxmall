@@ -7,10 +7,12 @@
 /kxmall-admin/target
 /*.log
 /kxmall-admin-api/*.iml
+/kxmall-app-api/*.iml
 /kxmall-service-message/target
 /kxmall-admin-api/kxmall-admin-api.iml
 /kxmall-biz/kxmall-biz.iml
 /kxmall-core/kxmall-core.iml
 /kxmall-data/kxmall-data.iml
 /kxmall-admin/kxmall-admin.iml
+/kxmall-plugin-core/kxmall-plugin-core.iml
 /kxmall-plugin-core/target
