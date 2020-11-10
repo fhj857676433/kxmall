@@ -41,8 +41,8 @@ kxmall项目结构:
 ---
 | 河禾生鲜 | 河禾生鲜 | 河禾生鲜 |
 | :----: | :----: | :----: |
-| ![河禾生鲜](doc/kxmall-app-1.jpeg)  | ![河禾生鲜](doc/kxmall-app-2.jpeg) | ![河禾生鲜](doc/kxmall-app-3.jpeg) |
-| ![河禾生鲜](doc/kxmall-app-4.jpeg)  | ![河禾生鲜](doc/kxmall-app-5.jpeg) | ![河禾生鲜](doc/kxmall-app-6.jpeg) |
+| ![河禾生鲜](https://nontax.oss-cn-beijing.aliyuncs.com/kxmall/kxmall-app-1.jpeg)  | ![河禾生鲜](https://nontax.oss-cn-beijing.aliyuncs.com/kxmall/kxmall-app-2.jpeg) | ![河禾生鲜](https://nontax.oss-cn-beijing.aliyuncs.com/kxmall/kxmall-app-3.jpeg) |
+| ![河禾生鲜](https://nontax.oss-cn-beijing.aliyuncs.com/kxmall/kxmall-app-4.jpeg)  | ![河禾生鲜](https://nontax.oss-cn-beijing.aliyuncs.com/kxmall/kxmall-app-5.jpeg) | ![河禾生鲜](https://nontax.oss-cn-beijing.aliyuncs.com/kxmall/kxmall-app-6.jpeg) |
 
 #### 后台端系统演示
 
@@ -51,9 +51,9 @@ kxmall项目结构:
 
 ---
  
-![河禾生鲜](doc/kxmall-admin-1.png)  
-![河禾生鲜](doc/kxmall-admin-2.png)  
-![河禾生鲜](doc/kxmall-admin-3.png)   
+![河禾生鲜](https://nontax.oss-cn-beijing.aliyuncs.com/kxmall/kxmall-admin-1.png)  
+![河禾生鲜](https://nontax.oss-cn-beijing.aliyuncs.com/kxmall/kxmall-admin-2.png)  
+![河禾生鲜](https://nontax.oss-cn-beijing.aliyuncs.com/kxmall/kxmall-admin-3.png)   
 
 - 登录名:guest   密码:123456   验证码:666666 (guest仅有只读权限)
 
